@@ -30,7 +30,7 @@ class ArticleDaoImpl implements ArticleDao
     public function getArticleById(int $id): Article
     {
         // TODO: Implement getArticleById() method.
-        return Article::find($id);
+        return Article::with("content")->find($id);
     }
 
     public function getArticleMaxId(): int

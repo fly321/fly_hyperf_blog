@@ -34,9 +34,9 @@ class ArticleServiceImpl implements ArticleService
 
     }
 
-    public function getArticleById()
+    public function getArticleById(int $id): \App\Model\Article
     {
-        // TODO: Implement getArticleById() method.
+        return $this->articleDao->getArticleById($id);
     }
 
     public function getArticleMaxId()
