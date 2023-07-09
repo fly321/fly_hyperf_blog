@@ -2,19 +2,20 @@
 
 namespace App\Service\Impl;
 
-use App\Dao\ArticleDao;
+use App\Dao\Impl\ArticleDaoImpl;
+use App\Service\ArticleService;
 use Hyperf\Di\Annotation\Inject;
 
-class ArticleServiceImpl implements \App\Service\ArticleService
+class ArticleServiceImpl implements ArticleService
 {
 
     #[Inject]
-    protected ArticleDao $articleDao;
+    protected ArticleDaoImpl $articleDao;
 
     public function getArticleList(array $params)
     {
-        if ($params['cursor'] == 'max') {
-            $params['cursor'] = $this->articleDao->getArticleMaxId();
+        if ($params['cursor'] == 0) {
+            $params['cursor'] = $this->articleDao->getArticleMaxId()+1;
         }
 
         $whiteList = ['cursor', 'pageSize', 'query'];
@@ -23,8 +24,11 @@ class ArticleServiceImpl implements \App\Service\ArticleService
                 unset($params[$key]);
             }
             if (!array_key_exists($key, $params)){
-                $params[$key] = '';
+                $params[$key] = [];
             }
+        }
+        if (empty($params['query'])){
+            $params['query'] = [];
         }
         return $this->articleDao->getArticleList($params['cursor'], $params['pageSize'], $params['query']);
 
