@@ -3,6 +3,8 @@
 namespace App\Service\Impl;
 
 use App\Dao\Impl\ArticleDaoImpl;
+use App\Exception\FlyException;
+use App\Model\Article;
 use App\Service\ArticleService;
 use Hyperf\Di\Annotation\Inject;
 
@@ -30,11 +32,15 @@ class ArticleServiceImpl implements ArticleService
         if (empty($params['query'])){
             $params['query'] = [];
         }
-        return $this->articleDao->getArticleList($params['cursor'], $params['pageSize'], $params['query']);
 
+        try {
+            return $this->articleDao->getArticleList($params['cursor'], $params['pageSize'], $params['query']);
+        } catch (\Throwable $e) {
+            throw new FlyException($e->getMessage());
+        }
     }
 
-    public function getArticleById(int $id): \App\Model\Article
+    public function getArticleById(int $id): ?Article
     {
         return $this->articleDao->getArticleById($id);
     }

@@ -2,35 +2,39 @@
 
 namespace App\Controller\Article;
 
-use App\Controller\AbstractController;
-use App\Service\ArticleService;
+use App\Controller\BaseController;
 use App\Service\Impl\ArticleServiceImpl;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\AutoController;
-use Hyperf\HttpServer\Annotation\RequestMapping;
 
 #[AutoController(prefix: "/article.index")]
-class IndexController extends AbstractController
+class IndexController extends BaseController
 {
     #[Inject]
     protected ArticleServiceImpl $articleService;
 
     public function index()
     {
-        $res = $this->articleService->getArticleList($this->request->all());
-        return [
-            'code' => 200,
-            'data' => $res
-        ];
+        try {
+            $res = $this->articleService->getArticleList($this->request->all());
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage());
+        }
+        return $this->success($res);
     }
 
     public function detail()
     {
-        $res = $this->articleService->getArticleById($this->request->input('id', 1));
-        return [
-            'code' => 200,
-            'data' => $res
-        ];
+        try {
+            $id = $this->request->input('id', 1);
+            $res = $this->articleService->getArticleById(intval($id));
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage());
+        }
+        if (empty($res)) {
+            return $this->error('文章不存在');
+        }
+        return $this->success($res);
     }
 
 }

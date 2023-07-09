@@ -27,7 +27,7 @@ class ArticleDaoImpl implements ArticleDao
         return $res->orderBy("id", "desc")->get();
     }
 
-    public function getArticleById(int $id): Article
+    public function getArticleById(int $id): ?Article
     {
         // TODO: Implement getArticleById() method.
         return Article::with("content")->find($id);
