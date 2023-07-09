@@ -28,7 +28,7 @@ class IndexController extends BaseController
         try {
             $id = $this->request->input('id', 1);
             $res = $this->articleService->getArticleById(intval($id));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->error($e->getMessage());
         }
         if (empty($res)) {
