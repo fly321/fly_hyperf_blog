@@ -31,6 +31,7 @@ class CreateArticle extends Migration
             $table->string('title', 255)->comment('标题');
             $table->string('describe', 500)->comment('描述');
             $table->string('image', 255)->comment('首图');
+            $table->bigInteger('category_id')->unsigned()->comment('分类id');
             $table->timestamps();
             $table->comment('文章');
         });
