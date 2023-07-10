@@ -2,6 +2,8 @@
 
 namespace App\Lib;
 
+use App\Exception\FlyException;
+use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 class JwtLib
@@ -17,12 +19,16 @@ class JwtLib
             'exp' => $expire,
             'data' => $data
         ];
-        return \Firebase\JWT\JWT::encode($token, $key, 'HS256');
+        return JWT::encode($token, $key, 'HS256');
     }
 
     public function decode($token)
     {
         $key = \Hyperf\Support\env('JWT_KEY');
-        return \Firebase\JWT\JWT::decode($token, new Key($key, 'HS256'));
+        try {
+            return JWT::decode($token, new Key($key, 'HS256'));
+        } catch (FlyException $e) {
+            throw new FlyException('token解析失败，请重新登录！');
+        }
     }
 }
