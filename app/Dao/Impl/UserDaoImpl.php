@@ -3,13 +3,21 @@
 namespace App\Dao\Impl;
 
 use App\Exception\FlyException;
+use App\Lib\JwtLib;
 use App\Model\Admin;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Utils\ApplicationContext;
+use Psr\SimpleCache\CacheInterface;
 
 class UserDaoImpl implements \App\Dao\UserDao
 {
+    #[Inject]
+    protected JwtLib $jwtLib;
+
+    #[Inject]
+    protected CacheInterface $cache;
 
     public function login(?array $data)
     {
@@ -23,6 +31,31 @@ class UserDaoImpl implements \App\Dao\UserDao
         })->firstOr(function () {
             throw new FlyException('用户名不存在');
         });
+
+        // 判断密码是否正确
+        $password = md5($data['password'] . $res->salt);
+        if ($password != $res->password) {
+            throw new FlyException('密码错误');
+        }
+
+        // 更新登录时间和ip
+        $res->last_login_time = time();
+        $res->last_login_ip = $this->getRealIp();
+        $res->save();
+
+        $res->code = $this->jwtLib->encode($res);
+
+        $this->cache->set(md5($res->code), $res->id, \Hyperf\Support\env('JWT_EXPIRE', 7200));
+        return [
+            "id" => $res->id,
+            "code" => $res->code,
+            "username" => $res->username,
+            "nickname" => $res->nickname,
+            "avatar" => $res->avatar,
+            "email" => $res->email,
+            "last_login_time" => $res->last_login_time,
+            "last_login_ip" => $res->last_login_ip,
+        ];
     }
 
     public function register(?array $data)
