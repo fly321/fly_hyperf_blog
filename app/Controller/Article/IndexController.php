@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Service\Impl\ArticleServiceImpl;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\AutoController;
+use Hyperf\HttpServer\Annotation\Middleware;
 
 #[AutoController(prefix: "/article.index")]
 class IndexController extends BaseController

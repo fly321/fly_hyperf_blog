@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use Hyperf\HttpServer\Annotation\Middleware;
+
 class BaseController extends AbstractController
 {
 
