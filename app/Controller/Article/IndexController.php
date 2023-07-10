@@ -38,4 +38,11 @@ class IndexController extends BaseController
         return $this->success($res);
     }
 
+    #[Middleware(\App\Middleware\article\UserMiddleware::class)]
+    public function add()
+    {
+        $res = "add";
+        return $this->success($res);
+    }
+
 }

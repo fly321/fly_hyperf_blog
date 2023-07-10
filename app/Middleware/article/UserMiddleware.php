@@ -22,8 +22,13 @@ class UserMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // 判断token是否存在
+        if (!$request->hasHeader('token')) {
+            return $this->noLogin();
+        }
         // 校验登陆
         $token = $request->getHeader('token')[0] ?? '';
+
         $t1 = md5($token);
         if (!$this->cache->has($t1)) {
             return $this->noLogin();
@@ -42,11 +47,11 @@ class UserMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    protected function noLogin() {
+    protected function noLogin($msg = '') {
         $response = Context::get(ResponseInterface::class);
         return $response->withStatus(401)->withBody(new \Hyperf\HttpMessage\Stream\SwooleStream(json_encode([
             'code' => 401,
-            'msg' => '请先登录'
+            'msg' => $msg == '' ? 'no login' : $msg
         ], JSON_UNESCAPED_UNICODE)));
     }
 

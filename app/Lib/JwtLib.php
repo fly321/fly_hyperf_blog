@@ -12,7 +12,7 @@ class JwtLib
     {
         $key = \Hyperf\Support\env('JWT_KEY');
         $time = time();
-        $expire = $time +  \Hyperf\Support\env('jwt.JWT_EXPIRE');
+        $expire = $time +  \Hyperf\Support\env('JWT_EXPIRE');
         $token = [
             'iat' => $time,
             'nbf' => $time,
@@ -27,8 +27,8 @@ class JwtLib
         $key = \Hyperf\Support\env('JWT_KEY');
         try {
             return JWT::decode($token, new Key($key, 'HS256'));
-        } catch (FlyException $e) {
-            throw new FlyException('token解析失败，请重新登录！');
+        } catch (\Throwable  $e) {
+            throw new FlyException('token 不合法: ' . $e->getMessage());
         }
     }
 }
