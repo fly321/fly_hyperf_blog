@@ -42,9 +42,7 @@ class UserDaoImpl implements \App\Dao\UserDao
         $res->last_login_time = time();
         $res->last_login_ip = $this->getRealIp();
         $res->save();
-
         $res->code = $this->jwtLib->encode($res);
-
         $this->cache->set(md5($res->code), $res->id, \Hyperf\Support\env('JWT_EXPIRE', 7200));
         return [
             "id" => $res->id,
